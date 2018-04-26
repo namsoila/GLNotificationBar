@@ -90,13 +90,13 @@ var timer:Timer?
 var messageDidSelect:((Bool) -> Void)?
 
 /**
-   A GLNotificationBar object displays an banner message to user (**iOS 10 Style**) over top of the screen which helps to handle local or remote notification when app is in active state. 
+ A GLNotificationBar object displays an banner message to user (**iOS 10 Style**) over top of the screen which helps to handle local or remote notification when app is in active state.
  
-   Can add `GLNotifyAction` as action to the message, which provides `button or text input` fields to respond to notification.
+ Can add `GLNotifyAction` as action to the message, which provides `button or text input` fields to respond to notification.
  
  */
 open class GLNotificationBar: NSObject {
-
+    
     @objc public override init() {
         super.init()
     }
@@ -129,9 +129,9 @@ open class GLNotificationBar: NSObject {
         }else{
             setUpNotificationBar(title, body: message , notificationStyle:preferredStyle)
         }
-
         
-         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.0 * Double(NSEC_PER_SEC) )) / Double(NSEC_PER_SEC)) {
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.0 * Double(NSEC_PER_SEC) )) / Double(NSEC_PER_SEC)) {
             if SHOW_TIME != 0 {
                 if (timer != nil) {
                     timer!.invalidate()
@@ -142,7 +142,7 @@ open class GLNotificationBar: NSObject {
         }
     }
     
-
+    
     
     /**
      *showTime* hides the notification bar after given time period.
@@ -151,12 +151,12 @@ open class GLNotificationBar: NSObject {
      
      - Returns: No return value.
      */
-
+    
     @objc open func showTime(_ timeInSec: Double){
         SHOW_TIME = timeInSec
     }
-
-
+    
+    
     
     /**
      *notificationSound* helps in playing the sound file while displaying notification, If file name or type does't found.Default sound will be played.
@@ -170,7 +170,7 @@ open class GLNotificationBar: NSObject {
      - Returns: No return value.
      */
     @objc open func notificationSound(_ name: String!, ofType:String!, vibrate:Bool){
-
+        
         if vibrate {
             AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         }
@@ -180,7 +180,7 @@ open class GLNotificationBar: NSObject {
             return
         }
         let pianoSound  =  URL(fileURLWithPath:path)
-       
+        
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: pianoSound, fileTypeHint: nil)
             audioPlayer.prepareToPlay()
@@ -191,19 +191,19 @@ open class GLNotificationBar: NSObject {
         }
         
     }
-
+    
     /**
      `addAction` helps in adding `GLNotifyAction` to notification bar as options to respond notification.
      
      - Parameter action:   add's `GLNotifyAction` object as action which including the title to display in the button, button style , and a handler to execute when the user taps the button
-
+     
      - Returns: No return value.
      */
     
     @objc open func addAction(_ action: GLNotifyAction){
         actionArray.append(action)    //Action for notification didselect
     }
-
+    
     
     @objc open func setColorStyle(_ color: GLNotificationColorType){
         switch color {
@@ -235,16 +235,16 @@ open class GLNotificationBar: NSObject {
         }
     }
     
-
+    
     
     
     @IBAction func hideNotification(_ sender:UIButton) {
         if (notificationBar != nil) {
             UIView.animate(withDuration: 0.5, animations: {
                 notificationBar.frame.origin = CGPoint(x: 0, y: -BAR_HEIGHT)
-                }, completion: { (yes) in
-                    notificationBar.removeFromSuperview()
-                    APP_DELEGATE.keyWindow?.windowLevel = 0.0
+            }, completion: { (yes) in
+                notificationBar.removeFromSuperview()
+                APP_DELEGATE.keyWindow?.windowLevel = 0.0
             })
         }
     }
@@ -275,10 +275,10 @@ open class GLNotificationBar: NSObject {
             notificationBar.body.text = body
         }else{
             let attributeString = NSMutableAttributedString(string: String("\(header)\n\(body)"))
-            attributeString.addAttributes([NSFontAttributeName:UIFont.boldSystemFont(ofSize: 15)], range: NSRange(location: 0, length: header.characters.count))
+            attributeString.addAttributes([NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 15)], range: NSRange(location: 0, length: header.characters.count))
             notificationBar.body.attributedText = attributeString
         }
-
+        
         var infoDic:Dictionary = Bundle.main.infoDictionary!
         appName = infoDic["CFBundleName"] as? String
         notificationBar.header.text = appName
@@ -292,7 +292,7 @@ open class GLNotificationBar: NSObject {
         } else {
             notificationBar.appIcon.layer.borderColor = UIColor.gray.cgColor
             notificationBar.appIcon.layer.borderWidth = 1.0
-
+            
             appIconName = ""
             print("Oops... no app icon found")
         }
@@ -317,7 +317,7 @@ open class GLNotificationBar: NSObject {
                 frame = CGRect(x: 0, y: 0, width: frameWidth, height: BAR_HEIGHT)
             }
             notificationBar.frame = frame
-            }, completion: nil)
+        }, completion: nil)
         
         // Hide status bar except iPhone X.
         APP_DELEGATE.keyWindow?.windowLevel = deviceHeight == 812 ? 0 :(UIWindowLevelStatusBar + 1)
@@ -337,7 +337,7 @@ open class GLNotificationBar: NSObject {
 }
 
 /**
-  A GLNotifyAction object represents an action that can be taken when tapping a button in an `GLNotificationBar`. You use this class to configure information about a single action, including the title to display in the button, any styling information, and a handler to execute when the user taps the button. After creating an notificatio action object, add it to a `GLNotificationBar` object before displaying the corresponding notification to the user.
+ A GLNotifyAction object represents an action that can be taken when tapping a button in an `GLNotificationBar`. You use this class to configure information about a single action, including the title to display in the button, any styling information, and a handler to execute when the user taps the button. After creating an notificatio action object, add it to a `GLNotificationBar` object before displaying the corresponding notification to the user.
  */
 
 open class GLNotifyAction : NSObject {
@@ -345,12 +345,12 @@ open class GLNotifyAction : NSObject {
     @objc open var textResponse:String!
     @objc open var actionStyle:GLNotificationActionType = .default
     var didSelectAction:((GLNotifyAction) -> Void)?
-
+    
     @objc public override init() {
         super.init()
     }
-
-
+    
+    
     /**
      Init a notification action and add it as action to `GLNotificationBar`.
      
@@ -367,7 +367,7 @@ open class GLNotifyAction : NSObject {
         actionTitle = title
         actionStyle = style
         didSelectAction = handler
-     }
+    }
 }
 
 class CustomView : UIView {
@@ -383,7 +383,7 @@ class CustomView : UIView {
     //MARK: Variables:
     var dismissLabelAlpha:CGFloat = 0.0
     var dismissLimitReached = false
-
+    
     var toolBarBottomConstraint: NSLayoutConstraint?
     
     //MARK: Constants:
@@ -410,7 +410,7 @@ class CustomView : UIView {
     fileprivate func commonInit() {
         Bundle(for: CustomView.self)
             .loadNibNamed("GLNotificationBar", owner:self, options:nil)
-//        NSBundle.mainBundle().loadNibNamed("GLNotificationBar", owner: self, options: nil)
+        //        NSBundle.mainBundle().loadNibNamed("GLNotificationBar", owner: self, options: nil)
         guard let content = view else { return }
         content.frame = self.bounds
         content.autoresizingMask = [.flexibleHeight, .flexibleWidth]
@@ -420,8 +420,8 @@ class CustomView : UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(CustomView.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
     }
-
-
+    
+    
     //MARK: Open in detail:
     func setUpDetailedNotificationBar(_ header:String!,body:String!,action:[GLNotifyAction]!) {
         notificationStyleIndicator.layer.cornerRadius = 3.0
@@ -441,7 +441,7 @@ class CustomView : UIView {
         
         mainView.backgroundColor = UIColor.clear
         mainView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         //Notification Banner
         let detailedbanner = UIView()
         detailedbanner.translatesAutoresizingMaskIntoConstraints = false
@@ -483,10 +483,10 @@ class CustomView : UIView {
         let rangeStr = tempContainer[0]
         let attributeString = NSMutableAttributedString(string: body)
         if body.contains("\n") {
-            attributeString.addAttributes([NSFontAttributeName:UIFont.boldSystemFont(ofSize: 15)], range: NSRange(location: 0, length: rangeStr.characters.count))
-            attributeString.addAttributes([NSFontAttributeName:UIFont.systemFont(ofSize: 15)], range: NSRange(location: rangeStr.characters.count, length: tempContainer[1].characters.count))
+            attributeString.addAttributes([NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 15)], range: NSRange(location: 0, length: rangeStr.characters.count))
+            attributeString.addAttributes([NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15)], range: NSRange(location: rangeStr.characters.count, length: tempContainer[1].characters.count))
         }else{
-            attributeString.addAttributes([NSFontAttributeName:UIFont.systemFont(ofSize: 15)], range: NSRange(location: 0, length: body.characters.count))
+            attributeString.addAttributes([NSAttributedStringKey.font:UIFont.systemFont(ofSize: 15)], range: NSRange(location: 0, length: body.characters.count))
         }
         
         notificationMessage.translatesAutoresizingMaskIntoConstraints = false
@@ -500,7 +500,7 @@ class CustomView : UIView {
         
         
         detailedbanner.addSubview(notificationMessage)
-       
+        
         
         //Separator Line
         let seprator = UIView()
@@ -547,10 +547,10 @@ class CustomView : UIView {
             UIView.animate(withDuration: 0.3/2, delay: 0.0, options: .curveEaseIn, animations: {
                 self.mainView.transform = CGAffineTransform.identity
             },completion:nil)
-         }
+        }
         
     }
-
+    
     func createNotificationActionView() -> UIVisualEffectView  {
         sortActionArray()  //sort button action on condition
         
@@ -685,14 +685,14 @@ class CustomView : UIView {
     }
     
     
-
+    
     //MARK: GestureRecognizer:
     @IBAction func didSelectmessage(_ tapgesture: UITapGestureRecognizer) {
         if (notificationBar != nil) {
             UIView.animate(withDuration: 0.5, animations: {
                 notificationBar.frame.origin = CGPoint(x: 0, y: -BAR_HEIGHT)
-                }, completion: { (yes) in
-                    notificationBar.removeFromSuperview()
+            }, completion: { (yes) in
+                notificationBar.removeFromSuperview()
             })
         }
         closeMessage(nil)
@@ -758,7 +758,7 @@ class CustomView : UIView {
         
     }
     
-    func handleDetailedPanGesture(_ panGesture: UIPanGestureRecognizer) {
+    @objc func handleDetailedPanGesture(_ panGesture: UIPanGestureRecognizer) {
         
         var isLandScape = false
         let translation = panGesture.translation(in: self)
@@ -815,7 +815,7 @@ class CustomView : UIView {
                     }) { (bool) in
                         UIView.animate(withDuration: 0.3/2, delay: 0.0, options: .curveEaseIn, animations: {
                             self.dismissLabel.transform = CGAffineTransform.identity
-                            },completion:nil)
+                        },completion:nil)
                     }
                 }
                 if panVelocity > 2000{
@@ -852,7 +852,7 @@ class CustomView : UIView {
         }
     }
     
-
+    
     
     //MARK: Support:
     func sortActionArray() {
@@ -860,7 +860,7 @@ class CustomView : UIView {
         var index = 0
         var isCancelTypeFound = false
         for action in actionArray {
-
+            
             let style:GLNotificationActionType = action.actionStyle
             switch style{
             case .cancel:
@@ -881,7 +881,7 @@ class CustomView : UIView {
         }
         if tempContainer.count != 0 {
             actionArray.append(tempContainer[0])
-//            print("\n\n#WARNING: Only one .Cancel type can be added to GLNotifyAction.Others will be not taken into account \n")
+            //            print("\n\n#WARNING: Only one .Cancel type can be added to GLNotifyAction.Others will be not taken into account \n")
         }
     }
     
@@ -897,7 +897,7 @@ class CustomView : UIView {
         
         return image!
     }
-
+    
     
     
     func setUpTextField(_ action:GLNotifyAction, senderTag:Int)  {
@@ -906,7 +906,7 @@ class CustomView : UIView {
             self.notificationActionView.isHidden = true
         }, completion: { (bool) in
             self.notificationActionView.removeFromSuperview()
-        }) 
+        })
         
         textField.translatesAutoresizingMaskIntoConstraints = false
         // 15: Padding, 30: send button
@@ -936,22 +936,22 @@ class CustomView : UIView {
         toolBar.items = [fixedWidth,barButtonItemOne,fixedWidth,barButtonItemtwo,fixedWidth]
         
         
-//        var constraints = [NSLayoutConstraint]()
-//        let dic = ["textField":textField,"button":button,"Main":toolBar];
-//
-//        let horizontalConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[textField][button(60)]|", options: [], metrics: nil, views: dic)
-//        constraints += horizontalConstraint
-//
-//        let verticalConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[textField(30)]-|", options: [], metrics: nil, views: dic)
-//        constraints += verticalConstraint
-//
-//        let verticalConstraint1 = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[button]-|", options: [], metrics: nil, views: dic)
-//        constraints += verticalConstraint1
-//
-////        let toolBarTopConstraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[toolBar]-20-[MainView]", options: [], metrics: nil, views: ["toolBar":toolBar,"MainView":mainView])
-////        constraints += toolBarTopConstraint
-//
-//        NSLayoutConstraint.activate(constraints)
+        //        var constraints = [NSLayoutConstraint]()
+        //        let dic = ["textField":textField,"button":button,"Main":toolBar];
+        //
+        //        let horizontalConstraint = NSLayoutConstraint.constraints(withVisualFormat: "H:|-[textField][button(60)]|", options: [], metrics: nil, views: dic)
+        //        constraints += horizontalConstraint
+        //
+        //        let verticalConstraint = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[textField(30)]-|", options: [], metrics: nil, views: dic)
+        //        constraints += verticalConstraint
+        //
+        //        let verticalConstraint1 = NSLayoutConstraint.constraints(withVisualFormat: "V:|-[button]-|", options: [], metrics: nil, views: dic)
+        //        constraints += verticalConstraint1
+        //
+        ////        let toolBarTopConstraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[toolBar]-20-[MainView]", options: [], metrics: nil, views: ["toolBar":toolBar,"MainView":mainView])
+        ////        constraints += toolBarTopConstraint
+        //
+        //        NSLayoutConstraint.activate(constraints)
         
         
         toolBarBottomConstraint = NSLayoutConstraint(item: toolBar, attribute: .bottom, relatedBy: .equal, toItem: backgroudView, attribute: .bottom, multiplier: 1, constant: 0)
@@ -970,7 +970,7 @@ class CustomView : UIView {
         
     }
     
-
+    
     
     @IBAction func sendButtonPressed(_ sender:UIButton) {
         let action:GLNotifyAction = actionArray[sender.tag]
@@ -983,24 +983,24 @@ class CustomView : UIView {
         closeMessage(sender)
     }
     
-
+    
     @IBAction func closeMessage(_ sender: UIButton?) {
         actionArray = [GLNotifyAction]()  //Clear cached action before leaving
         textField.resignFirstResponder()
         APP_DELEGATE.keyWindow?.windowLevel = 0.0
-
+        
         UIView.animate(withDuration: 0.5, animations: {
             self.mainView.frame.origin = CGPoint(x: 0, y: (APP_DELEGATE.keyWindow?.frame.size.height)!)
-            }, completion: { (ok) in
-                UIView.animate(withDuration: 2.0, delay: 0.5, options: [], animations: {
-                    self.backgroudView.removeFromSuperview()
-                    }, completion: nil)
-        }) 
+        }, completion: { (ok) in
+            UIView.animate(withDuration: 2.0, delay: 0.5, options: [], animations: {
+                self.backgroudView.removeFromSuperview()
+            }, completion: nil)
+        })
     }
     
     
     //MARK: Notification center:
-    func keyboardWillShown(_ notification: Notification) {
+    @objc func keyboardWillShown(_ notification: Notification) {
         let info = notification.userInfo!
         let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         
@@ -1013,7 +1013,7 @@ class CustomView : UIView {
         })
     }
     
-    func keyboardWillHide(_ notification: Notification) {
+    @objc func keyboardWillHide(_ notification: Notification) {
         let info = notification.userInfo!
         let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         
@@ -1025,7 +1025,7 @@ class CustomView : UIView {
             
         })
     }
-
+    
 }
 
 //MARK: Extensions:
@@ -1084,7 +1084,7 @@ extension CustomView : UITableViewDataSource,UITableViewDelegate{
             break
         }
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 50
     }
@@ -1120,16 +1120,16 @@ extension UIColor {
 
 extension UILabel {
     func heightToFit(_ string:String,width:CGFloat) -> CGFloat{
-        let attributes = [NSFontAttributeName : UIFont.systemFont(ofSize: 14)]
+        let attributes = [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)]
         numberOfLines = 0
         lineBreakMode = NSLineBreakMode.byWordWrapping
         let rect = string.boundingRect(with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
         return rect.height
-//        self.frame.size.height = rect.height
+        //        self.frame.size.height = rect.height
     }
     
     func resizeHeightToFit() {
-        let attributes = [NSFontAttributeName : UIFont.systemFont(ofSize: 14)]
+        let attributes = [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)]
         numberOfLines = 0
         lineBreakMode = NSLineBreakMode.byWordWrapping
         let rect = text!.boundingRect(with: CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil)
